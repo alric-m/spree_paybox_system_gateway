@@ -17,7 +17,6 @@ Gem::Specification.new do |s|
   s.requirements << 'none'
 
   s.add_dependency 'spree_core', '~> 2.4.0.rc3'
-  s.add_dependency 'payr', github: 'ChooseYourBoss/payr'
 
   s.add_dependency "rails", ">= 3.2.8"
   s.add_development_dependency 'capybara', '1.0.1'
