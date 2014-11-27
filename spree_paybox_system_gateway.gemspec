@@ -3,8 +3,8 @@ Gem::Specification.new do |s|
   s.platform    = Gem::Platform::RUBY
   s.name        = 'spree_paybox_system_gateway'
   s.version     = '2.1.1'
-  s.summary     = 'TODO: Add gem summary here'
-  s.description = 'TODO: Add (optional) gem description here'
+  s.summary     = 'Add gem summary here'
+  s.description = 'no description here'
   s.required_ruby_version = '>= 2.1'
 
   s.author    = 'alric_m'
