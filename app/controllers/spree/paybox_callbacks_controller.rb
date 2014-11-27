@@ -41,7 +41,7 @@ class Spree::PayboxCallbacksController < Payr::BillsController
         flash.notice = Spree.t(:order_processed_successfully)
         flash[:commerce_tracking] = "nothing special"
         session[:order_id] = nil
-        redirect_to @order_path(order, :token => @order.guest_token)
+        redirect_to order_path(order, :token => @order.guest_token)
       else
         puts '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$'
         puts @order.errors.full_messages
