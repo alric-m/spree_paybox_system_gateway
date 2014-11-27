@@ -124,17 +124,12 @@ module Spree
         @payr = Payr::Client.new
 
         @paybox_params = @payr.get_paybox_params_from command_id: @order.id,
-                                                      buyer_email: spree_current_user.email,
+                                                      buyer_email: @order.email,
                                                       total_price: ( @order.total * 100 ).to_i,
                                                       callbacks: {
-                                                        # paid: "http://paybox.devel.dotgee.fr:3000/checkout/paybox_paid",
-                                                        # refused: "http://paybox.devel.dotgee.fr:3000/checkout/paybox_paid",
-                                                        # cancelled: "http://paybox.devel.dotgee.fr:3000/checkout/paybox_paid",
-                                                        # ipn: "http://paybox.devel.dotgee.fr:3000/checkout/paybox_paid"
                                                         paid: "#{Spree::Config.site_url}#{paybox_paid_path}",
                                                         refused: "#{Spree::Config.site_url}#{paybox_refused_path}",
                                                         cancelled: "#{Spree::Config.site_url}#{paybox_cancelled_path}",
-                                                        # ipn: "http://localhost:3000#{paybox_ipn_path}"
                                                         ipn: "#{Spree::Config.site_url}paybox/ipn"
                                                       }
 
