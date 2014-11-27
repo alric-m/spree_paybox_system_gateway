@@ -86,7 +86,7 @@ module Spree
 
       flash.notice = t(:order_processed_successfully)
       @order.reload
-      redirect_to order_path(@order)
+      redirect_to order_path(@order, :token => @order.guest_token)
     end
 
     def paybox_refused

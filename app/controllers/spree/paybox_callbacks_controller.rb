@@ -36,6 +36,20 @@ class Spree::PayboxCallbacksController < Payr::BillsController
       # end
 
       @order.finalize!
+      @order.next
+      if @order.complete?
+        flash.notice = Spree.t(:order_processed_successfully)
+        flash[:commerce_tracking] = "nothing special"
+        session[:order_id] = nil
+=begin
+        redirect_to @order_path(order, :token => @order.guest_token)
+=end
+      else
+        flash.error = @order.errors.full_messages
+=begin
+        redirect_to checkout_state_path(@order.state)
+=end
+      end
 
       logger.debug "PAYBOX_PAID: #{payment_method.inspect} #{@order.payments.inspect} #{@order.inspect} #{params.inspect}"
       render nothing: true, :status => 200, :content_type => 'text/html'
