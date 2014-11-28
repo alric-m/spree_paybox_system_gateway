@@ -45,14 +45,19 @@ class Spree::PayboxCallbacksController < Payr::BillsController
         :amount => @order.total,
         :payment_method => payment_method
       })
+      @order.payments.last.started_processing!
+      unless @order.payments.last.completed?
+        # see: app/controllers/spree/skrill_status_controller.rb line 22
+        @order.payments.last.complete!
+      end
       @order.next
       if @order.complete?
         flash.notice = Spree.t(:order_processed_successfully)
         flash[:commerce_tracking] = "nothing special"
         session[:order_id] = nil
-        redirect_to completion_route(order)
+        redirect_to completion_route(@order)
       else
-        redirect_to checkout_state_path(order.state)
+        redirect_to checkout_state_path(@order.state)
       end
     else
       #do stuff
