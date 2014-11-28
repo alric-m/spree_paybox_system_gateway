@@ -116,7 +116,7 @@ module Spree
         if @order.nil?
           return redirect_to cart_path 
         else
-          return paybox_ipn_path
+          return redirect_to paybox_ipn_path
         end
       end
 
