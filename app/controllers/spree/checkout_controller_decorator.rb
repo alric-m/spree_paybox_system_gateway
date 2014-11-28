@@ -110,7 +110,9 @@ module Spree
           # redirect to failure
           return
         end
-        @order = Spree::Order.find_by_id(session[:order_id])
+        @order = Spree::Order.find_by_number(params[:ref])
+        puts "In paybox_check_response"
+        puts @order
         return redirect_to cart_path if @order.nil?
       end
 
