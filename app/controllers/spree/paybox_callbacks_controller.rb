@@ -50,6 +50,7 @@ class Spree::PayboxCallbacksController < Payr::BillsController
       puts "@order.payment_state before next"
       puts @order.payment_state
       @order.next
+      @order.reload
       puts "@order.state after next"
       puts @order.state
       puts "@order.payment_state after next"
@@ -59,14 +60,14 @@ class Spree::PayboxCallbacksController < Payr::BillsController
         puts @order.payments.last.state
         puts "@order.payment_state before process"
         puts @order.payment_state
-        @order.payments.last.process!
+        @order.payments.last.started_processing!
         puts "@order.payments.last.state after process"
         puts @order.payments.last.state
         puts "@order.payment_state after process"
         puts @order.payment_state
         unless @order.payments.last.completed?
           # see: app/controllers/spree/skrill_status_controller.rb line 22
-          @order.payments.last.purchase!
+          @order.payments.last.complete!
           puts "@order.payments.last.state after purchase"
           puts @order.payments.last.state
           puts "@order.payment_state after purchase"
