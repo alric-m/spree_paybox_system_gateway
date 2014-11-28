@@ -12,32 +12,12 @@ class Spree::PayboxCallbacksController < Payr::BillsController
     response.headers["Pragma"] = "no-cache"
     response.headers["Expires"] = "Fri, 01 Jan 1990 00:00:00 GMT"
 
-=begin
-    unless @order.payments.where(:source_type => 'Spree::PayboxSystemTransaction').present?
-      #
-      # Record used payment method before payment
-      # because there is no way to pass additionnal params
-      # to paybox system
-      #
-      payment_method = PaymentMethod.find(params[:payment_method_id])
-      payment = @order.payments.create(:amount => @order.total,
-                                       # :source => paybox_transaction,
-                                       :payment_method_id => payment_method.id)
-      render action: 'paybox_pay', layout: false
-    end
-=end
     render action: 'paybox_pay', layout: false
   end
 
   def ipn
-    #super
-
-    if params[:error] == NO_ERROR #&& Payr::Client.new.check_response_ipn(request.url)
-=begin
-      @order = current_order || raise(ActiveRecord::RecordNotFound)
-=end
+    if params[:error] == NO_ERROR
       @order = Spree::Order.find_by_number(params[:ref]) || raise(ActiveRecord::RecordNotFound)
-      puts "________________________________________"
       paybox_transaction = Spree::PayboxSystemTransaction.create_from_postback params.merge(:action => 'paid')
       @order.payments.create!({
         :source => paybox_transaction,
@@ -45,35 +25,14 @@ class Spree::PayboxCallbacksController < Payr::BillsController
         :amount => @order.total,
         :payment_method => payment_method
       })
-      puts "@order.state before next"
-      puts @order.state
-      puts "@order.payment_state before next"
-      puts @order.payment_state
       @order.next
       @order.reload
-      puts "@order.state after next"
-      puts @order.state
-      puts "@order.payment_state after next"
-      puts @order.payment_state
       if @order.complete?
-        puts "@order.payments.last.state before process"
-        puts @order.payments.last.state
-        puts "@order.payment_state before process"
-        puts @order.payment_state
         @order.payments.last.started_processing!
-        puts "@order.payments.last.state after process"
-        puts @order.payments.last.state
-        puts "@order.payment_state after process"
-        puts @order.payment_state
         unless @order.payments.last.completed?
           # see: app/controllers/spree/skrill_status_controller.rb line 22
           @order.payments.last.complete!
-          puts "@order.payments.last.state after purchase"
-          puts @order.payments.last.state
-          puts "@order.payment_state after purchase"
-          puts @order.payment_state
         end
-        puts "________________________________________"
         flash.notice = Spree.t(:order_processed_successfully)
         flash[:commerce_tracking] = "nothing special"
         session[:order_id] = nil
@@ -86,49 +45,6 @@ class Spree::PayboxCallbacksController < Payr::BillsController
       logger.debug "Erreur: #{params[:error]}"
     end
 
-=begin
-    @order = Spree::Order.find_by_number(params[:ref])
-    if params[:error] == NO_ERROR #&& Payr::Client.new.check_response_ipn(request.url)
-      unless @order.payments.where(:source_type => 'Spree::PayboxSystemTransaction').present?
-        puts 'in the unless'
-        payment_method = Spree::PaymentMethod.where(type: "Spree::PaymentMethod::PayboxSystem").first
-        paybox_transaction = Spree::PayboxSystemTransaction.create_from_postback params.merge(:action => 'paid')
-        payment = @order.payments.where(:state => 'checkout',
-                                        :payment_method_id => payment_method.id).first
-
-        puts 'paybox_transaction'
-        puts paybox_transaction
-        if payment
-          payment.source = paybox_transaction
-          payment.save
-        else
-          payment = @order.payments.create(:amount => @order.total,
-                                           :source => paybox_transaction,
-                                           :payment_method_id => payment_method.id)
-        end
-
-        payment.started_processing!
-        unless payment.completed?
-          # see: app/controllers/spree/skrill_status_controller.rb line 22
-          payment.complete!
-        end
-      end
-
-      @order.finalize!
-      @order.next
-      if @order.complete?
-        flash.notice = Spree.t(:order_processed_successfully)
-        flash[:commerce_tracking] = "nothing special"
-        session[:order_id] = nil
-        redirect_to checkout_state_path(@order.state)
-      end
-
-      logger.debug "PAYBOX_PAID: #{payment_method.inspect} #{@order.payments.inspect} #{@order.inspect} #{params.inspect}"
-      render nothing: true, :status => 200, :content_type => 'text/html'
-    else
-      logger.debug "Erreur: #{params[:error]}"
-    end
-=end
   end
 
   private
