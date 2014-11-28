@@ -33,7 +33,10 @@ class Spree::PayboxCallbacksController < Payr::BillsController
     #super
 
     if params[:error] == NO_ERROR #&& Payr::Client.new.check_response_ipn(request.url)
+=begin
       @order = current_order || raise(ActiveRecord::RecordNotFound)
+=end
+      @order = Spree::Order.find_by_number(params[:ref]) || raise(ActiveRecord::RecordNotFound)
       puts params.merge(:action => 'paid')
       paybox_transaction = Spree::PayboxSystemTransaction.create_from_postback params.merge(:action => 'paid')
       @order.payments.create!({
