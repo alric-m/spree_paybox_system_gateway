@@ -37,7 +37,7 @@ class Spree::PayboxCallbacksController < Payr::BillsController
       @order = current_order || raise(ActiveRecord::RecordNotFound)
 =end
       @order = Spree::Order.find_by_number(params[:ref]) || raise(ActiveRecord::RecordNotFound)
-      puts params.merge(:action => 'paid')
+      puts "________________________________________"
       paybox_transaction = Spree::PayboxSystemTransaction.create_from_postback params.merge(:action => 'paid')
       @order.payments.create!({
         :source => paybox_transaction,
@@ -45,12 +45,23 @@ class Spree::PayboxCallbacksController < Payr::BillsController
         :amount => @order.total,
         :payment_method => payment_method
       })
+      puts "@order.payments.last.state before started_processing"
+      puts @order.payments.last.state
       @order.payments.last.started_processing!
+      puts "@order.payments.last.state after started_processing"
+      puts @order.payments.last.state
       unless @order.payments.last.completed?
         # see: app/controllers/spree/skrill_status_controller.rb line 22
         @order.payments.last.complete!
+        puts "@order.payments.last.state after complete"
+        puts @order.payments.last.state
       end
+      puts "@order.state before next"
+      puts @order.state
       @order.next
+      puts "@order.state after next"
+      puts @order.state
+      puts "________________________________________"
       if @order.complete?
         flash.notice = Spree.t(:order_processed_successfully)
         flash[:commerce_tracking] = "nothing special"
