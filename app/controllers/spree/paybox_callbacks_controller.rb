@@ -5,7 +5,7 @@ class Spree::PayboxCallbacksController < Payr::BillsController
 
   def ipn
     #super
-    @order = Spree::Order.find_by_number(params[:ref])
+    # @order = Spree::Order.find_by_number(params[:ref])
     if params[:error] == NO_ERROR #&& Payr::Client.new.check_response_ipn(request.url)
       unless @order.payments.where(:source_type => 'Spree::PayboxSystemTransaction').present?
         puts 'in the unless'

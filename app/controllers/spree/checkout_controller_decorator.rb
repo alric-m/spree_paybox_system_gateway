@@ -113,7 +113,10 @@ module Spree
         @order = Spree::Order.find_by_number(params[:ref])
         puts "In paybox_check_response"
         puts @order
-        return redirect_to cart_path if @order.nil?
+        if @order.nil?
+          return redirect_to cart_path 
+        else
+          return paybox_ipn_path
       end
 
       def paybox_check_ipn_response
@@ -122,6 +125,7 @@ module Spree
           # redirect to failure
           return
         end
+        @order = Spree::Order.find_by_number(params[:ref])
       end
 
       def load_paybox_params
