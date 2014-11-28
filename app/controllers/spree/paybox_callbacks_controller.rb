@@ -107,7 +107,7 @@ class Spree::PayboxCallbacksController < Payr::BillsController
   private
 
     def payment_method
-      Spree::PaymentMethod.find(params[:payment_method_id])
+      payment_method = Spree::PaymentMethod.where(type: "Spree::PaymentMethod::PayboxSystem").last
     end
 
     def paybox_check_ipn_response
