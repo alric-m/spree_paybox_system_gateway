@@ -45,8 +45,8 @@ class Spree::PayboxCallbacksController < Payr::BillsController
         :amount => @order.total,
         :payment_method => payment_method
       })
-      order.next
-      if order.complete?
+      @order.next
+      if @order.complete?
         flash.notice = Spree.t(:order_processed_successfully)
         flash[:commerce_tracking] = "nothing special"
         session[:order_id] = nil
