@@ -82,23 +82,23 @@ module Spree
       # @order.finalize!
 
       puts 'before finalize'
-      puts '@order.payments.last.status'
-      puts @order.payments.last.status
+      puts '@order.payments.last.state'
+      puts @order.payments.last.state
       puts '@order.state'
       puts @order.state
 
       @order.finalize!
 
       puts 'before next'
-      puts '@order.payments.last.status'
-      puts @order.payments.last.status
+      puts '@order.payments.last.state'
+      puts @order.payments.last.state
       puts '@order.state'
       puts @order.state
       @order.next
 
       puts 'after next'
-      puts '@order.payments.last.status'
-      puts @order.payments.last.status
+      puts '@order.payments.last.state'
+      puts @order.payments.last.state
       puts '@order.state'
       puts @order.state
       if @order.complete?
