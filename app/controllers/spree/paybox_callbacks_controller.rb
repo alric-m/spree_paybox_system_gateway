@@ -47,20 +47,30 @@ class Spree::PayboxCallbacksController < Payr::BillsController
       })
       puts "@order.state before next"
       puts @order.state
+      puts "@order.payment_state before next"
+      puts @order.payment_state
       @order.next
       puts "@order.state after next"
       puts @order.state
+      puts "@order.payment_state after next"
+      puts @order.payment_state
       if @order.complete?
-        puts "@order.payments.last.state before started_processing"
+        puts "@order.payments.last.state before process"
         puts @order.payments.last.state
-        @order.payments.last.started_processing!
-        puts "@order.payments.last.state after started_processing"
+        puts "@order.payment_state before process"
+        puts @order.payment_state
+        @order.payments.last.process!
+        puts "@order.payments.last.state after process"
         puts @order.payments.last.state
+        puts "@order.payment_state after process"
+        puts @order.payment_state
         unless @order.payments.last.completed?
           # see: app/controllers/spree/skrill_status_controller.rb line 22
-          @order.payments.last.complete!
-          puts "@order.payments.last.state after complete"
+          @order.payments.last.purchase!
+          puts "@order.payments.last.state after purchase"
           puts @order.payments.last.state
+          puts "@order.payment_state after purchase"
+          puts @order.payment_state
         end
         puts "________________________________________"
         flash.notice = Spree.t(:order_processed_successfully)
