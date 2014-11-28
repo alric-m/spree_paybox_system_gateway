@@ -1,3 +1,4 @@
+=begin
 #
 #encoding: utf-8
 #
@@ -111,13 +112,13 @@ module Spree
       logger.debug "PAYBOX_PAID: #{payment_method.inspect} #{@order.payments.inspect} #{@order.inspect} #{params.inspect}"
       render nothing: true, :status => 200, :content_type => 'text/html'
 
-=begin
+
       logger.debug "PAYBOX_PAID: #{payment_method.inspect} #{@order.payments.inspect} #{@order.inspect} #{params.inspect}"
 
       flash.notice = t(:order_processed_successfully)
       @order.reload
       redirect_to order_path(@order, :token => @order.guest_token)
-=end
+
     end
 
     def paybox_refused
@@ -176,3 +177,4 @@ module Spree
       end
   end
 end
+=end

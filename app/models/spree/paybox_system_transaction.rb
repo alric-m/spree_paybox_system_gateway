@@ -9,9 +9,14 @@ module Spree
       %w{capture}
     end
 
-
+=begin
     def can_capture?(payment)
       false # payment.state == 'pending'
+    end
+=end
+
+    def auto_capture?
+      true
     end
 
     def can_void?(payment)
