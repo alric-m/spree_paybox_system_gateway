@@ -48,8 +48,6 @@ module Spree
 
     def paybox_paid
       # order_id, payment_method_id = params[:ref].split('|')
-
-=begin
       unless @order.payments.where(:source_type => 'Spree::PayboxSystemTransaction').present?
         payment_method = @order.payments.first.payment_method # PaymentMethod.find(payment_method_id)
         paybox_transaction = Spree::PayboxSystemTransaction.create_from_postback params.merge(:action => 'paid') # new(:action => 'paid', :amount => params[:amount], :auto => params[:auto], :error => params[:error], :ref => order_id)
@@ -72,7 +70,6 @@ module Spree
          payment.complete!
         end
       end
-=end
 
       # until @order.state == 'complete'
       #   if @order.next!
@@ -83,6 +80,36 @@ module Spree
 
       # a faire dans le ipn controller
       # @order.finalize!
+
+      puts 'before finalize'
+      puts '@order.payments.last.status'
+      puts @order.payments.last.status
+      puts '@order.state'
+      puts @order.state
+
+      @order.finalize!
+
+      puts 'before next'
+      puts '@order.payments.last.status'
+      puts @order.payments.last.status
+      puts '@order.state'
+      puts @order.state
+      @order.next
+
+      puts 'after next'
+      puts '@order.payments.last.status'
+      puts @order.payments.last.status
+      puts '@order.state'
+      puts @order.state
+      if @order.complete?
+        flash.notice = Spree.t(:order_processed_successfully)
+        flash[:commerce_tracking] = "nothing special"
+        session[:order_id] = nil
+        redirect_to checkout_state_path(@order.state)
+      end
+
+      logger.debug "PAYBOX_PAID: #{payment_method.inspect} #{@order.payments.inspect} #{@order.inspect} #{params.inspect}"
+      render nothing: true, :status => 200, :content_type => 'text/html'
 
 =begin
       logger.debug "PAYBOX_PAID: #{payment_method.inspect} #{@order.payments.inspect} #{@order.inspect} #{params.inspect}"
@@ -113,11 +140,7 @@ module Spree
         @order = Spree::Order.find_by_number(params[:ref])
         puts "In paybox_check_response"
         puts @order
-        if @order.nil?
-          return redirect_to cart_path 
-        else
-          return redirect_to paybox_ipn_path
-        end
+        return redirect_to cart_path if @order.nil?
       end
 
       def paybox_check_ipn_response
@@ -126,7 +149,6 @@ module Spree
           # redirect to failure
           return
         end
-        @order = Spree::Order.find_by_number(params[:ref])
       end
 
       def load_paybox_params
