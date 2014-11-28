@@ -49,6 +49,7 @@ module Spree
     def paybox_paid
       # order_id, payment_method_id = params[:ref].split('|')
 
+=begin
       unless @order.payments.where(:source_type => 'Spree::PayboxSystemTransaction').present?
         payment_method = @order.payments.first.payment_method # PaymentMethod.find(payment_method_id)
         paybox_transaction = Spree::PayboxSystemTransaction.create_from_postback params.merge(:action => 'paid') # new(:action => 'paid', :amount => params[:amount], :auto => params[:auto], :error => params[:error], :ref => order_id)
@@ -71,6 +72,7 @@ module Spree
          payment.complete!
         end
       end
+=end
 
       # until @order.state == 'complete'
       #   if @order.next!

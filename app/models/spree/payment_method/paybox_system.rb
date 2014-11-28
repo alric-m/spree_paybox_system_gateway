@@ -29,7 +29,7 @@ module Spree
     end
 
     def payment_source_class
-      PayboxSystemTransaction
+      Spree::PayboxSystemTransaction
     end
   end
 end
