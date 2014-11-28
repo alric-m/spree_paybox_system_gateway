@@ -117,6 +117,7 @@ module Spree
           return redirect_to cart_path 
         else
           return paybox_ipn_path
+        end
       end
 
       def paybox_check_ipn_response
