@@ -16,7 +16,7 @@ class Spree::PayboxCallbacksController < Payr::BillsController
   end
 
   def ipn
-    if params[:error] == NO_ERROR
+    if params[:error] == NO_ERROR && !@order.payments.where(:source_type => 'Spree::PayboxSystemTransaction').present?
       @order = Spree::Order.find_by_number(params[:ref]) || raise(ActiveRecord::RecordNotFound)
       paybox_transaction = Spree::PayboxSystemTransaction.create_from_postback params.merge(:action => 'paid')
       @order.payments.create!({
