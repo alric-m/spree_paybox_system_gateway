@@ -17,7 +17,7 @@ class Spree::PayboxCallbacksController < Payr::BillsController
         :source => paybox_transaction,
         :source_type => paybox_transaction.class.to_s,
         :amount => @order.total,
-        :payment_method => payment_method
+        :payment_method => payment_method("Paybox")
       })
       @order.next
       @order.reload
@@ -53,7 +53,7 @@ class Spree::PayboxCallbacksController < Payr::BillsController
         :source => paybox_transaction,
         :source_type => paybox_transaction.class.to_s,
         :amount => (@order.total * 0.4),
-        :payment_method => payment_method
+        :payment_method => payment_method("Paybox3Times")
       })
       @order.next
       @order.reload
@@ -69,7 +69,7 @@ class Spree::PayboxCallbacksController < Payr::BillsController
               :source => paybox_transaction,
               :source_type => paybox_transaction.class.to_s,
               :amount => (@order.total * 0.3),
-              :payment_method => payment_method
+              :payment_method => payment_method("Paybox3Times")
             })
           end
         end
@@ -93,8 +93,8 @@ class Spree::PayboxCallbacksController < Payr::BillsController
 
   private
 
-    def payment_method
-      payment_method = Spree::PaymentMethod.where(type: "Spree::PaymentMethod::PayboxSystem").last
+    def payment_method name
+      payment_method = Spree::PaymentMethod.find_by_name(name)
     end
 
     def paybox_check_ipn_response
