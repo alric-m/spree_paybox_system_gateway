@@ -1,0 +1,37 @@
+<html>
+  <head>
+    <title>Paybox checkout</title>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+  </head>
+  <body>
+    <div style="display: none;">
+      <form id="payboxForm" method="POST" action="https://preprod-tpeweb.paybox.com/cgi/MYchoix_pagepaiement.cgi" enctype="application/x-www-form-urlencoded">
+        <%= paybox_hidden_fields(:site => "1999888", :rang => "43",
+        :identifiant => "107975626",
+        :paybox => "https://preprod-tpeweb.paybox.com/cgi/MYchoix_pagepaiement.cgi",
+        :backup1 => "https://preprod-tpeweb.paybox.com/cgi/MYchoix_pagepaiement.cgi",
+        :backup2 => "https://preprod-tpeweb.paybox.com/cgi/MYchoix_pagepaiement.cgi",
+        :total => ((@order.total * 100) * 0.4).to_i.to_s,
+        :devise => 978,
+        :cmd => @order.number,
+        :porteur => @order.email,
+        :retour => "amount:M;ref:R;auto:A;error:E;secure:G;signature:K",
+        :effectue => paybox_ipn_n_times_url,
+        :refuse => paybox_ipn_n_times_url,
+        :annule => paybox_ipn_n_times_url,
+        :repondre_a => paybox_ipn_n_times_url,
+        :attente => paybox_ipn_n_times_url,
+        :"2mont1" => ((@order.total * 100) * 0.3).to_i.to_s,
+        :date1 => Date.today.advance(months: 1).strftime('%d/%m/%Y'),
+        :"2mont2" => ((@order.total * 100) * 0.3).to_i.to_s,
+        :date2 => Date.today.advance(months: 2).strftime('%d/%m/%Y')) %>
+        <input class="button primary" type="submit" value="Continuer" name="commit">
+      </form>
+    </div>
+    <script type="text/javascript">
+      $(document).ready(function() {
+        $('form#payboxForm').submit();
+      });
+    </script>
+  </body>
+</html>
