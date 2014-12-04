@@ -40,9 +40,63 @@ class Spree::PayboxCallbacksController < Payr::BillsController
       else
         redirect_to checkout_state_path(@order.state)
       end
-    else
+    elsif params[:error] != NO_ERROR
       #do stuff
       logger.debug "Erreur: #{params[:error]}"
+      @order.failure!
+      redirect_to checkout_state_path(@order.state)
+    else
+      # Doublon request
+    end
+
+  end
+
+  def ipn_n_times
+    @order = Spree::Order.find_by_number(params[:ref]) || raise(ActiveRecord::RecordNotFound)
+    if params[:error] == NO_ERROR && !@order.payments.where(:source_type => 'Spree::PayboxSystemTransaction').present?
+      paybox_transaction = Spree::PayboxSystemTransaction.create_from_postback params.merge(:action => 'paid')
+      @order.payments.create!({
+        :source => paybox_transaction,
+        :source_type => paybox_transaction.class.to_s,
+        :amount => (@order.total * 0.4),
+        :payment_method => payment_method
+      })
+      @order.payments.create!({
+        :source => paybox_transaction,
+        :source_type => paybox_transaction.class.to_s,
+        :amount => (@order.total * 0.3),
+        :payment_method => payment_method
+      })
+      @order.payments.create!({
+        :source => paybox_transaction,
+        :source_type => paybox_transaction.class.to_s,
+        :amount => (@order.total * 0.3),
+        :payment_method => payment_method
+      })
+      @order.next
+      @order.reload
+      if @order.complete?
+        @order.payments.each do |payment|
+          payment.started_processing!
+          unless payment.completed?
+            # see: app/controllers/spree/skrill_status_controller.rb line 22
+            payment.complete!
+          end
+        end
+        flash.notice = Spree.t(:order_processed_successfully)
+        flash[:commerce_tracking] = "nothing special"
+        session[:order_id] = nil
+        redirect_to completion_route(@order)
+      else
+        redirect_to checkout_state_path(@order.state)
+      end
+    elsif params[:error] != NO_ERROR
+      #do stuff
+      logger.debug "Erreur: #{params[:error]}"
+      @order.failure!
+      redirect_to checkout_state_path(@order.state)
+    else
+      # Doublon request
     end
 
   end

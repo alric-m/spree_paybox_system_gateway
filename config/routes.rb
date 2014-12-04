@@ -26,6 +26,7 @@ Spree::Core::Engine.add_routes do
 
   get '/paybox/paybox_pay', :to => 'paybox_callbacks#paybox_pay', :as => :paybox_pay
   match '/paybox/ipn' => "paybox_callbacks#ipn", :via => :get, :as => :paybox_ipn
+  match '/paybox/ipn_n_times' => "paybox_callbacks#ipn_n_times", :via => :get, :as => :paybox_ipn
 
   namespace :admin do
     resource :paybox_system_gateway_settings
