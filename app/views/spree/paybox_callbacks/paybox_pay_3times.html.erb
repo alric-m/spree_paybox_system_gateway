@@ -16,6 +16,8 @@
           :devise => 978,
           :cmd => @order.number,
           :porteur => @order.email,
+          :typepaiement => "CARTE",
+          :typecarte => "CB",
           :retour => "amount:M;ref:R;auto:A;error:E;secure:G;signature:K",
           :effectue => paybox_ipn_n_times_url,
           :refuse => paybox_ipn_n_times_url,
