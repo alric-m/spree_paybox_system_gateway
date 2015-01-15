@@ -105,22 +105,6 @@ class Spree::PayboxCallbacksController < Payr::BillsController
       end
     end
 
-    def load_paybox_params
-      # return unless params[:state] == 'payment'
-
-      @payr = Payr::Client.new
-
-      @paybox_params = @payr.get_paybox_params_from command_id: @order.id,
-                                                    buyer_email: @order.email,
-                                                    total_price: ( @order.total * 100 ).to_i,
-                                                    callbacks: {
-                                                      paid: "#{Spree::Config.site_url}#{paybox_paid_path}",
-                                                      refused: "#{Spree::Config.site_url}#{paybox_refused_path}",
-                                                      cancelled: "#{Spree::Config.site_url}#{paybox_cancelled_path}",
-                                                      ipn: "#{Spree::Config.site_url}paybox/ipn"
-                                                    }
-    end
-
     def validate_paybox
       return if [ 'address', 'delivery' ].include?(params[:state])
       # raise params.inspect
